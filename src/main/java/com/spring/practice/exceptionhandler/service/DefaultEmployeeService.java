@@ -2,11 +2,11 @@ package com.spring.practice.exceptionhandler.service;
 
 
 import com.spring.practice.exceptionhandler.entity.Employee;
+import com.spring.practice.exceptionhandler.exception.NoSuchEmployeeException;
 import com.spring.practice.exceptionhandler.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -30,7 +30,8 @@ public class DefaultEmployeeService implements EmployeeService{
         if (optional.isPresent()) {                                           // Check if null
             return optional.get();
         }
-        else throw new NoSuchElementException();                        // TODO
+        else throw new NoSuchEmployeeException("There is no employee with ID = "
+                + id + " in Database");
     }
 
     @Override
@@ -46,6 +47,11 @@ public class DefaultEmployeeService implements EmployeeService{
 
     @Override
     public void deleteEmployee(Long id) {
-        repository.deleteById(id);
+        Optional<Employee> optional = repository.findById(id);
+        if(optional.isPresent()){
+            repository.deleteById(id);
+        }
+        else throw new NoSuchEmployeeException("There is no employee with ID = "
+                    + id + "in Database");
     }
 }
